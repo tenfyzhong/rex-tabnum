@@ -20,29 +20,6 @@ return {
 }
 ```
 
-Use directory-based specs in `~/.config/rex/init.lua`:
-
-```lua
-require("rexpack").setup({
-    spec = "plugins",
-    dev = { path = "dev" },
-})
-```
-
-For local development, put this repository at `~/.config/rex/dev/rex-tabnum`.
-Rexpack detects that checkout directly. For a remote installation, install the
-plugin with `rexpack install rex-tabnum` first. Run `rex config reload` to apply
-configuration changes. Check the event runner with:
-
-```sh
-rex do rexpack_events_control op=status
-```
-
-Do not call `start` from `init` or `config`: those callbacks also run in the
-configuration VM, where native event subscriptions are unavailable. Call it
-once per runner from `events`. Rexpack owns runner lifetime and reload handover;
-reload Rex configuration to recover a failed runner.
-
 ## Behavior
 
 - Number each local session independently in tab order: `0. Title`, `1. Title`.
@@ -56,14 +33,13 @@ reload Rex configuration to recover a failed runner.
   continuously changing titles. Skip unchanged labels to prevent rename loops.
 - Ignore sessions/windows deleted during synchronization; surface other errors.
 
-The plugin has no idle polling. Rexpack itself uses a heartbeat to manage its
-shared runner. Only local sessions are covered, not remote hosts.
+The plugin has no idle polling. Only local sessions are covered, not remote hosts.
 
 ## Migrate from standalone scripts
 
 Remove `require("rexwatcher")` from Hammerspoon's `init.lua` and reload
 Hammerspoon to stop its existing listener. Then enable the spec above and reload
-Rex. Verify the runner is `running` and the old `watch_tab_numbers.lua` process
+Rex. Verify tab numbering works and the old `watch_tab_numbers.lua` process
 has exited before removing the old `tab_numbers.lua`, `watch_tab_numbers.lua`,
 `hammerspoon_rex.lua`, and Hammerspoon's `rexwatcher.lua`.
 
